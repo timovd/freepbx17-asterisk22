@@ -1,0 +1,114 @@
+services:
+  freepbx:
+    build:
+      context: .
+      args:
+        ASTERISK_VERSION: "22.9.0"
+        FREEPBX_VERSION: "17.0-latest"
+    image: local/freepbx17-asterisk22:22.9.0
+    container_name: freepbx
+    restart: unless-stopped
+    init: true
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      TZ: Europe/Amsterdam
+      SERVER_NAME: localhost
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      DB_NAME: asterisk
+      DB_CDR_NAME: asteriskcdrdb
+      DB_USER: freepbx
+      DB_PASSWORD: freepbxpass
+      DB_ROOT_PASSWORD: rootpass
+      FREEPBX_ADMIN_USER: admin
+      FREEPBX_ADMIN_PASSWORD: changeme-admin
+      FREEPBX_ADMIN_EMAIL: admin@example.invalid
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      POSTFIX_MYHOSTNAME: freepbx.localdomain
+      # POSTFIX_RELAYHOST: "[smtp.example.com]:587"
+      # POSTFIX_SMTP_USER: "smtp-user"
+      # POSTFIX_SMTP_PASSWORD: "smtp-password"
+      # POSTFIX_FROM_ADDRESS: "pbx@example.com"
+    ports:
+      - "8080:80"
+      - "8443:443"
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+      - "5061:5061/tcp"
+      - "5160:5160/udp"
+      - "5161:5161/udp"
+      - "10000-10100:10000-10100/udp"
+    volumes:
+      - freepbx_etc:/etc/asterisk
+      - freepbx_lib:/var/lib/asterisk
+      - freepbx_log:/var/log/asterisk
+      - freepbx_spool:/var/spool/asterisk
+      - freepbx_www:/var/www/html
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    sysctls:
+      net.ipv4.ip_unprivileged_port_start: "0"
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: freepbx-mariadb
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: asterisk
+      MARIADB_USER: freepbx
+      MARIADB_PASSWORD: freepbxpass
+      TZ: Europe/Amsterdam
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --sql-mode=ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-bookworm
+    container_name: freepbx-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+
+  fail2ban:
+    image: crazymax/fail2ban:latest
+    container_name: freepbx-fail2ban
+    restart: unless-stopped
+    network_mode: "service:freepbx"
+    depends_on:
+      - freepbx
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      TZ: Europe/Amsterdam
+      F2B_LOG_LEVEL: INFO
+      F2B_DB_PURGE_AGE: 7d
+    volumes:
+      - ./fail2ban/jail.d:/data/jail.d:ro
+      - ./fail2ban/filter.d:/data/filter.d:ro
+      - freepbx_log:/var/log/asterisk:ro
+
+volumes:
+  freepbx_etc:
+  freepbx_lib:
+  freepbx_log:
+  freepbx_spool:
+  freepbx_www:
+  mariadb_data:
+  redis_data:

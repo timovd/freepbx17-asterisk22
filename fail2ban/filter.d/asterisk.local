@@ -1,0 +1,7 @@
+[Definition]
+failregex = ^.*SecurityEvent="InvalidPassword".*RemoteAddress="IPV[46]/(UDP|TCP|TLS)/<HOST>/.*".*$
+            ^.*SecurityEvent="ChallengeResponseFailed".*RemoteAddress="IPV[46]/(UDP|TCP|TLS)/<HOST>/.*".*$
+            ^.*SecurityEvent="InvalidAccountID".*RemoteAddress="IPV[46]/(UDP|TCP|TLS)/<HOST>/.*".*$
+            ^.*NOTICE.* .*: Registration from '.*' failed for '<HOST>(:\d+)?' - Wrong password.*$
+            ^.*NOTICE.* .*: Registration from '.*' failed for '<HOST>(:\d+)?' - No matching endpoint found.*$
+ignoreregex =
