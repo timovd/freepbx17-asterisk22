@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 FROM debian:12-slim
 
-ARG ASTERISK_VERSION=22.9.0
+ARG ASTERISK_VERSION=22.10.0
 ARG FREEPBX_VERSION=17.0-latest
 ARG DEBIAN_FRONTEND=noninteractive
 

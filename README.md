@@ -8,9 +8,9 @@
 Your Open Source Asterisk PBX GUI Solution
 ```
 
-# FreePBX 17 + Asterisk 22.9.0 on Debian 12 Docker
+# FreePBX 17 + Asterisk 22.10.0 on Debian 12 Docker
 
-This project builds a Debian 12 Bookworm image with Asterisk `22.9.0` compiled from the official upstream tarball and FreePBX `17.0-latest` downloaded from the FreePBX package mirror. MariaDB runs as a supported `10.11` service, Redis is provided for PHP session caching, Postfix is preconfigured at container startup, and Fail2ban runs as a sidecar sharing the FreePBX network namespace.
+This project builds a Debian 12 Bookworm image with Asterisk `22.10.0` compiled from the official upstream tarball and FreePBX `17.0-latest` downloaded from the FreePBX package mirror. MariaDB runs as a supported `10.11` service, Redis is provided for PHP session caching, Postfix is preconfigured at container startup, and Fail2ban runs as a sidecar sharing the FreePBX network namespace.
 
 ## Build and start
 
@@ -32,7 +32,7 @@ Change these before first startup.
 ## Versions
 
 - Debian: 12 Bookworm
-- Asterisk: `22.9.0` from `https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}.tar.gz`
+- Asterisk: `22.10.0` from `https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}.tar.gz`
 - FreePBX: `17.0-latest` from `http://mirror.freepbx.org/modules/packages/freepbx/freepbx-${FREEPBX_VERSION}.tgz`
 - MariaDB: `10.11`
 - PHP: `8.2`
