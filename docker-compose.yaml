@@ -1,10 +1,5 @@
 services:
   freepbx:
-    build:
-      context: .
-      args:
-        ASTERISK_VERSION: "22.10.0"
-        FREEPBX_VERSION: "17.0-latest"
     image: local/freepbx17-asterisk22:22.10.0
     container_name: freepbx
     restart: unless-stopped
@@ -35,14 +30,14 @@ services:
       # POSTFIX_SMTP_PASSWORD: "smtp-password"
       # POSTFIX_FROM_ADDRESS: "pbx@example.com"
     ports:
-      - "8080:80"
-      - "8443:443"
-      - "5060:5060/udp"
+      - "8080:80" # FreePBX web interface
+      # - "8443:443" # FreePBX optional web interface
+      - "5060:5060/udp" # SIP
       - "5060:5060/tcp"
-      - "5061:5061/tcp"
-      - "5160:5160/udp"
+      - "5061:5061/tcp" # SIP TLS
+      - "5160:5160/udp" # ChanSIP
       - "5161:5161/udp"
-      - "10000-10100:10000-10100/udp"
+      - "10000-10100:10000-10100/udp" # streams
     volumes:
       - freepbx_etc:/etc/asterisk
       - freepbx_lib:/var/lib/asterisk
